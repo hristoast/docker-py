@@ -88,10 +88,9 @@ class Swarm(Model):
 
         """
         init_kwargs = {}
-        for arg in ['advertise_addr', 'listen_addr', 'force_new_cluster']:
-            if arg in kwargs:
-                init_kwargs[arg] = kwargs[arg]
-                del kwargs[arg]
+        init_kwargs['advertise_addr'] = advertise_addr
+        init_kwargs['listen_addr'] = listen_addr
+        init_kwargs['force_new_cluster'] = force_new_cluster
         init_kwargs['swarm_spec'] = SwarmSpec(**kwargs)
         self.client.api.init_swarm(**init_kwargs)
         self.reload()
