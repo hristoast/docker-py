@@ -29,3 +29,22 @@ class SwarmTest(unittest.TestCase):
             cm.exception.response.status_code == 406 or
             cm.exception.response.status_code == 503
         )
+
+    def test_init_set_advertise_addr(self):
+        client = docker.from_env()
+        client.swarm.init(advertise_addr="1.2.3.4:5678")
+        assert (client.nodes.list()[0].attrs["ManagerStatus"]["Addr"] ==
+                "1.2.3.4:5678")
+        client.swarm.leave(force=True)
+        client.swarm.init(advertise_addr="1.2.3.4:5676")
+        assert (client.nodes.list()[0].attrs["ManagerStatus"]["Addr"] ==
+                "1.2.3.4:5676")
+
+    def test_init_set_listen_addr(self):
+        client = docker.from_env()
+        client.swarm.init(listen_addr=":5670")
+        assert (":5670" in client.nodes.list()[0].attrs["ManagerStatus"]["Addr"])
+        client.swarm.leave(force=True)
+        client.swarm.init(listen_addr=":5679")
+        assert (":5679" in client.nodes.list()[0].attrs["ManagerStatus"]["Addr"])
+        client.swarm.leave(force=True)
